@@ -1,0 +1,108 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="mb-0">Upcoming Dues (Next 30 Days)</h5>
+        <span class="badge bg-info">{{ upcoming_installments.count }} installments</span>
+    </div>
+    <div class="card-body">
+        {% if upcoming_installments %}
+            <div class="alert alert-info">
+                <h6><i class="bi bi-calendar-event"></i> Total Upcoming Amount: ₹{{ total_upcoming_amount|floatformat:0 }}</h6>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Due Date</th>
+                            <th>Borrower</th>
+                            <th>Phone</th>
+                            <th>Installment</th>
+                            <th>Amount Due</th>
+                            <th>Days Until Due</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for installment in upcoming_installments %}
+                        <tr>
+                            <td>
+                                <strong>{{ installment.due_date }}</strong>
+                                <br><small class="text-muted">{{ installment.due_date|date:"l" }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'borrower_detail' installment.loan.borrower.id %}">
+                                    <strong>{{ installment.loan.borrower.name }}</strong>
+                                </a>
+                            </td>
+                            <td>{{ installment.loan.borrower.phone }}</td>
+                            <td>
+                                <a href="{% url 'loan_detail' installment.loan.id %}">
+                                    #{{ installment.installment_number }} of {{ installment.loan.tenure_months }}
+                                </a>
+                                <br><small class="text-muted">Loan: ₹{{ installment.loan.amount|floatformat:0 }}</small>
+                            </td>
+                            <td>
+                                <strong class="text-primary">₹{{ installment.amount_due|floatformat:0 }}</strong>
+                            </td>
+                            <td>
+                                {% now "Y-m-d" as today %}
+                                <span class="badge bg-primary">
+                                    {{ installment.due_date|timeuntil }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'installment_pay' installment.id %}" class="btn btn-success">
+                                        <i class="bi bi-credit-card"></i> Pay
+                                    </a>
+                                    <a href="{% url 'loan_detail' installment.loan.id %}" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Summary by Week -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h6>Summary by Week:</h6>
+                    <div class="row">
+                        {% regroup upcoming_installments by due_date|date:"W" as weekly_groups %}
+                        {% for week in weekly_groups %}
+                        <div class="col-md-3 mb-2">
+                            <div class="card text-center">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title mb-1">Week {{ week.grouper }}</h6>
+                                    <p class="card-text mb-1">
+                                        <strong>{{ week.list|length }}</strong> installments
+                                    </p>
+                                    <small class="text-muted">
+                                        ₹{% for item in week.list %}{{ item.amount_due|add:0 }}{% if not forloop.last %} + {% endif %}{% endfor %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-check fs-1 text-success"></i>
+                <h4 class="text-success mt-3">No Upcoming Dues!</h4>
+                <p class="text-muted">No installments are due in the next 30 days.</p>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

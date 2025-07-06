@@ -1,0 +1,146 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Installment Info -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Installment Details</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Borrower:</dt>
+                    <dd class="col-sm-7">
+                        <a href="{% url 'borrower_detail' installment.loan.borrower.id %}">
+                            {{ installment.loan.borrower.name }}
+                        </a>
+                    </dd>
+                    
+                    <dt class="col-sm-5">Loan Amount:</dt>
+                    <dd class="col-sm-7">₹{{ installment.loan.amount|floatformat:0 }}</dd>
+                    
+                    <dt class="col-sm-5">Installment:</dt>
+                    <dd class="col-sm-7">#{{ installment.installment_number }} of {{ installment.loan.tenure_months }}</dd>
+                    
+                    <dt class="col-sm-5">Due Date:</dt>
+                    <dd class="col-sm-7">{{ installment.due_date }}</dd>
+                    
+                    <dt class="col-sm-5">Amount Due:</dt>
+                    <dd class="col-sm-7">₹{{ installment.amount_due|floatformat:0 }}</dd>
+                    
+                    <dt class="col-sm-5">Total Paid:</dt>
+                    <dd class="col-sm-7">₹{{ installment.amount_paid|floatformat:0 }}</dd>
+                    
+                    <dt class="col-sm-5">Remaining:</dt>
+                    <dd class="col-sm-7">
+                        <strong class="{% if installment.get_remaining_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                            ₹{{ installment.get_remaining_amount|floatformat:0 }}
+                        </strong>
+                    </dd>
+                    
+                    <dt class="col-sm-5">Status:</dt>
+                    <dd class="col-sm-7">
+                        {% if installment.status == 'PAID' %}
+                            <span class="badge bg-success">Paid</span>
+                        {% elif installment.status == 'PARTIAL' %}
+                            <span class="badge bg-warning">Partial</span>
+                        {% elif installment.status == 'OVERDUE' %}
+                            <span class="badge bg-danger">Overdue</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Pending</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+                
+                {% if installment.get_remaining_amount > 0 %}
+                <div class="d-grid">
+                    <a href="{% url 'installment_pay' installment.id %}" class="btn btn-success">
+                        <i class="bi bi-credit-card"></i> Make Payment
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment History -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Payment History</h5>
+            </div>
+            <div class="card-body">
+                {% if payments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Payment Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Notes</th>
+                                    <th>Recorded On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ payment.payment_date }}</strong>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">₹{{ payment.amount|floatformat:0 }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ payment.get_payment_method_display }}</span>
+                                    </td>
+                                    <td>
+                                        {% if payment.notes %}
+                                            {{ payment.notes }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ payment.created_at|date:"M d, Y H:i" }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-info">
+                                    <th>Total Payments:</th>
+                                    <th>₹{{ installment.amount_paid|floatformat:0 }}</th>
+                                    <th colspan="3"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-receipt fs-1 text-muted"></i>
+                        <h5 class="text-muted mt-3">No payments yet</h5>
+                        <p class="text-muted">No payments have been made for this installment.</p>
+                        {% if installment.get_remaining_amount > 0 %}
+                        <a href="{% url 'installment_pay' installment.id %}" class="btn btn-primary">
+                            <i class="bi bi-credit-card"></i> Make First Payment
+                        </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="text-center mt-3">
+            <a href="{% url 'loan_detail' installment.loan.id %}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Back to Loan Details
+            </a>
+            <a href="{% url 'installment_schedule' installment.loan.id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-calendar-check"></i> View Full Schedule
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

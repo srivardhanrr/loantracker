@@ -1,0 +1,273 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Disbursed</h6>
+                        <h4 class="mb-0">₹{{ stats.total_disbursed|floatformat:0|default:"0" }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-cash-stack fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Receivable</h6>
+                        <h4 class="mb-0">₹{{ stats.total_receivable|floatformat:0|default:"0" }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-arrow-down-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">This Month Expected</h6>
+                        <h4 class="mb-0">₹{{ stats.pending_this_month|floatformat:0|default:"0" }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-month fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Overdue Amount</h6>
+                        <h4 class="mb-0">₹{{ stats.overdue_amount|floatformat:0|default:"0" }}</h4>
+                        <small>{{ stats.overdue_count }} installments</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Active Loans</h5>
+                <h2 class="text-primary">{{ stats.active_loans_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Borrowers</h5>
+                <h2 class="text-success">{{ stats.total_borrowers }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Collection Rate</h5>
+                <h2 class="text-info">
+                    {% widthratio stats.received_this_month stats.expected_income 100 %}%
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{% url 'borrower_add' %}" class="btn btn-primary w-100 mb-2">
+                            <i class="bi bi-person-plus"></i> Add Borrower
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'loan_add' %}" class="btn btn-success w-100 mb-2">
+                            <i class="bi bi-plus-circle"></i> Create Loan
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'overdue_installments' %}" class="btn btn-warning w-100 mb-2">
+                            <i class="bi bi-exclamation-triangle"></i> View Overdue
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'upcoming_dues' %}" class="btn btn-info w-100 mb-2">
+                            <i class="bi bi-calendar-event"></i> Upcoming Dues
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Overdue Installments -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="mb-0">Overdue Installments</h5>
+                <a href="{% url 'overdue_installments' %}" class="btn btn-sm btn-outline-danger">View All</a>
+            </div>
+            <div class="card-body">
+                {% if overdue_installments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Borrower</th>
+                                    <th>Due Date</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for installment in overdue_installments %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'loan_detail' installment.loan.id %}">
+                                            {{ installment.loan.borrower.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="text-danger">{{ installment.due_date }}</span>
+                                        <br><small class="text-muted">{{ installment.days_overdue }} days overdue</small>
+                                    </td>
+                                    <td>₹{{ installment.get_remaining_amount|floatformat:0 }}</td>
+                                    <td>
+                                        <a href="{% url 'installment_pay' installment.id %}" 
+                                           class="btn btn-sm btn-success">Pay</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">No overdue installments!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Dues -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="mb-0">Upcoming Dues (7 days)</h5>
+                <a href="{% url 'upcoming_dues' %}" class="btn btn-sm btn-outline-info">View All</a>
+            </div>
+            <div class="card-body">
+                {% if upcoming_dues %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Borrower</th>
+                                    <th>Due Date</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for installment in upcoming_dues %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'loan_detail' installment.loan.id %}">
+                                            {{ installment.loan.borrower.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ installment.due_date }}</td>
+                                    <td>₹{{ installment.amount_due|floatformat:0 }}</td>
+                                    <td>
+                                        <a href="{% url 'installment_pay' installment.id %}" 
+                                           class="btn btn-sm btn-primary">Pay</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">No upcoming dues in the next 7 days.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Payments -->
+{% if recent_payments %}
+<div class="row mt-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="mb-0">Recent Payments</h5>
+                <a href="{% url 'all_payments' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Borrower</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in recent_payments %}
+                            <tr>
+                                <td>{{ payment.payment_date }}</td>
+                                <td>
+                                    <a href="{% url 'loan_detail' payment.installment.loan.id %}">
+                                        {{ payment.installment.loan.borrower.name }}
+                                    </a>
+                                </td>
+                                <td>₹{{ payment.amount|floatformat:0 }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ payment.get_payment_method_display }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

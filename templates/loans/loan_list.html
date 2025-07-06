@@ -1,0 +1,148 @@
+{% extends 'loans/base.html' %}
+
+{% block page_actions %}
+<div class="col-auto">
+    <a href="{% url 'loan_add' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create New Loan
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Search and Filter Form -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                {{ search_form.borrower_name }}
+            </div>
+            <div class="col-md-2">
+                {{ search_form.status }}
+            </div>
+            <div class="col-md-2">
+                {{ search_form.start_date_from }}
+            </div>
+            <div class="col-md-2">
+                {{ search_form.start_date_to }}
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                <a href="{% url 'loan_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Loans List -->
+<div class="card">
+    <div class="card-body">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Amount</th>
+                            <th>Interest</th>
+                            <th>Tenure</th>
+                            <th>Start Date</th>
+                            <th>Status</th>
+                            <th>Outstanding</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loan in page_obj %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'borrower_detail' loan.borrower.id %}" class="text-decoration-none">
+                                    <strong>{{ loan.borrower.name }}</strong>
+                                </a>
+                                <br><small class="text-muted">{{ loan.borrower.phone }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ loan.amount }}</strong>
+                                <br><small class="text-muted">Total: {{ loan.total_amount }}</small>
+                            </td>
+                            <td>{{ loan.interest_rate }}%</td>
+                            <td>{{ loan.tenure_months }} months</td>
+                            <td>{{ loan.start_date }}</td>
+                            <td>
+                                {% if loan.status == 'ACTIVE' %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif loan.status == 'CLOSED' %}
+                                    <span class="badge bg-secondary">Closed</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Defaulted</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if loan.status == 'ACTIVE' %}
+                                    <strong class="text-warning">{{ loan.get_outstanding_amount|floatformat:0|default:"0" }}</strong>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'loan_detail' loan.id %}" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if loan.status == 'ACTIVE' %}
+                                        <a href="{% url 'installment_schedule' loan.id %}" class="btn btn-outline-info">
+                                            <i class="bi bi-calendar-check"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Loans pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last &raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-cash-coin fs-1 text-muted"></i>
+                <h4 class="text-muted mt-3">No loans found</h4>
+                <p class="text-muted">Start by creating your first loan.</p>
+                <a href="{% url 'loan_add' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create First Loan
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

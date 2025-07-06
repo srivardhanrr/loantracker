@@ -1,0 +1,115 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Record Payment</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6><i class="bi bi-info-circle"></i> Installment Details</h6>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Borrower:</dt>
+                        <dd class="col-sm-8">{{ installment.loan.borrower.name }}</dd>
+                        
+                        <dt class="col-sm-4">Installment:</dt>
+                        <dd class="col-sm-8">#{{ installment.installment_number }} of {{ installment.loan.tenure_months }}</dd>
+                        
+                        <dt class="col-sm-4">Due Date:</dt>
+                        <dd class="col-sm-8">{{ installment.due_date }}</dd>
+                        
+                        <dt class="col-sm-4">Amount Due:</dt>
+                        <dd class="col-sm-8">₹{{ installment.amount_due|floatformat:0 }}</dd>
+                        
+                        <dt class="col-sm-4">Paid So Far:</dt>
+                        <dd class="col-sm-8">₹{{ installment.amount_paid|floatformat:0 }}</dd>
+                        
+                        <dt class="col-sm-4">Remaining:</dt>
+                        <dd class="col-sm-8"><strong>₹{{ remaining_amount|floatformat:0 }}</strong></dd>
+                    </dl>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.amount.id_for_label }}" class="form-label">Payment Amount (₹) *</label>
+                        {{ form.amount }}
+                        <div class="form-text">Maximum: ₹{{ remaining_amount|floatformat:0 }}</div>
+                        {% if form.amount.errors %}
+                            <div class="text-danger small">{{ form.amount.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.payment_date.id_for_label }}" class="form-label">Payment Date *</label>
+                                {{ form.payment_date }}
+                                {% if form.payment_date.errors %}
+                                    <div class="text-danger small">{{ form.payment_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.payment_method.id_for_label }}" class="form-label">Payment Method *</label>
+                                {{ form.payment_method }}
+                                {% if form.payment_method.errors %}
+                                    <div class="text-danger small">{{ form.payment_method.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-credit-card"></i> Record Payment
+                        </button>
+                        <a href="{% url 'loan_detail' installment.loan.id %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Quick Payment Buttons -->
+        {% if remaining_amount > 0 %}
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6>Quick Payment Options:</h6>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                            onclick="setAmount('{{ remaining_amount|floatformat:0 }}')">
+                        Pay Full Amount (₹{{ remaining_amount|floatformat:0 }})
+                    </button>
+                    {% if remaining_amount > 1000 %}
+                    <button type="button" class="btn btn-outline-secondary btn-sm" 
+                            onclick="setAmount('{{ remaining_amount|floatformat:0|add:"-500" }}')">
+                        Pay ₹{{ remaining_amount|floatformat:0|add:"-500" }}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function setAmount(amount) {
+    document.getElementById('id_amount').value = amount;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Borrower Information -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Borrower Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Name:</dt>
+                    <dd class="col-sm-8">{{ borrower.name }}</dd>
+                    
+                    <dt class="col-sm-4">Phone:</dt>
+                    <dd class="col-sm-8">{{ borrower.phone }}</dd>
+                    
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">{{ borrower.email|default:"-" }}</dd>
+                    
+                    <dt class="col-sm-4">Address:</dt>
+                    <dd class="col-sm-8">{{ borrower.address }}</dd>
+                    
+                    {% if borrower.id_proof %}
+                    <dt class="col-sm-4">ID Proof:</dt>
+                    <dd class="col-sm-8">
+                        <a href="{{ borrower.id_proof.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-download"></i> View Document
+                        </a>
+                    </dd>
+                    {% endif %}
+                </dl>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'borrower_edit' borrower.id %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit Borrower
+                    </a>
+                    <a href="{% url 'loan_add' %}?borrower={{ borrower.id }}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Create Loan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Summary Statistics -->
+    <div class="col-md-8">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white text-center">
+                    <div class="card-body">
+                        <h4>₹{{ summary.total_borrowed|floatformat:0 }}</h4>
+                        <small>Total Borrowed</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white text-center">
+                    <div class="card-body">
+                        <h4>₹{{ summary.total_paid|floatformat:0 }}</h4>
+                        <small>Total Paid</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white text-center">
+                    <div class="card-body">
+                        <h4>₹{{ summary.total_outstanding|floatformat:0 }}</h4>
+                        <small>Outstanding</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white text-center">
+                    <div class="card-body">
+                        <h4>{{ summary.overdue_count }}</h4>
+                        <small>Overdue</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loan History -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Loan History</h5>
+            </div>
+            <div class="card-body">
+                {% if loans %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Start Date</th>
+                                    <th>Amount</th>
+                                    <th>Interest Rate</th>
+                                    <th>Tenure</th>
+                                    <th>Status</th>
+                                    <th>Outstanding</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in loans %}
+                                <tr>
+                                    <td>{{ loan.start_date }}</td>
+                                    <td>₹{{ loan.amount|floatformat:0 }}</td>
+                                    <td>{{ loan.interest_rate }}%</td>
+                                    <td>{{ loan.tenure_months }} months</td>
+                                    <td>
+                                        {% if loan.status == 'ACTIVE' %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% elif loan.status == 'CLOSED' %}
+                                            <span class="badge bg-secondary">Closed</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Defaulted</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if loan.status == 'ACTIVE' %}
+                                            ₹{{ loan.get_outstanding_amount|floatformat:0 }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'loan_detail' loan.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-cash-coin fs-1 text-muted"></i>
+                        <h5 class="text-muted mt-3">No loans yet</h5>
+                        <p class="text-muted">Create the first loan for this borrower.</p>
+                        <a href="{% url 'loan_add' %}?borrower={{ borrower.id }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Create Loan
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

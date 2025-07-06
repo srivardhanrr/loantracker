@@ -1,0 +1,162 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="borrower" class="form-control" placeholder="Search by borrower name" value="{{ borrower_filter }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="date_from" class="form-control" placeholder="From Date" value="{{ date_from }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="date_to" class="form-control" placeholder="To Date" value="{{ date_to }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                <a href="{% url 'all_payments' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Payments List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">All Payments</h5>
+    </div>
+    <div class="card-body">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Borrower</th>
+                            <th>Loan Amount</th>
+                            <th>Installment</th>
+                            <th>Payment Amount</th>
+                            <th>Method</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in page_obj %}
+                        <tr>
+                            <td>
+                                {{ payment.payment_date }}
+                                <br><small class="text-muted">{{ payment.created_at|date:"M d, H:i" }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'borrower_detail' payment.installment.loan.borrower.id %}" class="text-decoration-none">
+                                    <strong>{{ payment.installment.loan.borrower.name }}</strong>
+                                </a>
+                                <br><small class="text-muted">{{ payment.installment.loan.borrower.phone }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'loan_detail' payment.installment.loan.id %}" class="text-decoration-none">
+                                    ₹{{ payment.installment.loan.amount|floatformat:0 }}
+                                </a>
+                                <br><small class="text-muted">{{ payment.installment.loan.interest_rate }}% - {{ payment.installment.loan.tenure_months }}m</small>
+                            </td>
+                            <td>
+                                #{{ payment.installment.installment_number }} of {{ payment.installment.loan.tenure_months }}
+                                <br><small class="text-muted">Due: {{ payment.installment.due_date }}</small>
+                            </td>
+                            <td>
+                                <strong class="text-success">₹{{ payment.amount|floatformat:0 }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ payment.get_payment_method_display }}</span>
+                            </td>
+                            <td>
+                                {% if payment.notes %}
+                                    <small>{{ payment.notes|truncatechars:30 }}</small>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'loan_detail' payment.installment.loan.id %}" class="btn btn-outline-primary" title="View Loan">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'payment_history' payment.installment.id %}" class="btn btn-outline-info" title="Payment History">
+                                        <i class="bi bi-clock-history"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Payments pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if borrower_filter %}&borrower={{ borrower_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">&laquo; First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if borrower_filter %}&borrower={{ borrower_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if borrower_filter %}&borrower={{ borrower_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if borrower_filter %}&borrower={{ borrower_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Last &raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+            <!-- Summary -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <strong>Summary:</strong> 
+                        Showing {{ page_obj|length }} payments out of {{ page_obj.paginator.count }} total payments
+                        {% if borrower_filter or date_from or date_to %}
+                            (filtered results)
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-receipt fs-1 text-muted"></i>
+                <h4 class="text-muted mt-3">No payments found</h4>
+                <p class="text-muted">
+                    {% if borrower_filter or date_from or date_to %}
+                        Try adjusting your filters or 
+                        <a href="{% url 'all_payments' %}">clear all filters</a>.
+                    {% else %}
+                        No payments have been recorded yet.
+                    {% endif %}
+                </p>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

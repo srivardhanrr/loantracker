@@ -1,0 +1,121 @@
+{% extends 'loans/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Installment Schedule: {{ loan.borrower.name }}</h5>
+    </div>
+    <div class="card-body">
+        <!-- Loan Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white text-center">
+                    <div class="card-body">
+                        <h5>₹{{ loan.amount|floatformat:0 }}</h5>
+                        <small>Principal Amount</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white text-center">
+                    <div class="card-body">
+                        <h5>₹{{ loan.total_amount|floatformat:0 }}</h5>
+                        <small>Total Amount</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white text-center">
+                    <div class="card-body">
+                        <h5>₹{{ loan.monthly_installment|floatformat:0 }}</h5>
+                        <small>Monthly EMI</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white text-center">
+                    <div class="card-body">
+                        <h5>₹{{ loan.get_outstanding_amount|floatformat:0 }}</h5>
+                        <small>Outstanding</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Installment Table -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Due Date</th>
+                        <th>Amount Due</th>
+                        <th>Amount Paid</th>
+                        <th>Remaining</th>
+                        <th>Payment Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for installment in installments %}
+                    <tr class="{% if installment.status == 'OVERDUE' %}table-danger{% elif installment.status == 'PAID' %}table-success{% elif installment.status == 'PARTIAL' %}table-warning{% endif %}">
+                        <td><strong>{{ installment.installment_number }}</strong></td>
+                        <td>
+                            {{ installment.due_date }}
+                            {% if installment.is_overdue %}
+                                <br><small class="text-danger">{{ installment.days_overdue }} days overdue</small>
+                            {% endif %}
+                        </td>
+                        <td>₹{{ installment.amount_due|floatformat:0 }}</td>
+                        <td>₹{{ installment.amount_paid|floatformat:0 }}</td>
+                        <td>
+                            {% if installment.get_remaining_amount > 0 %}
+                                <strong class="text-danger">₹{{ installment.get_remaining_amount|floatformat:0 }}</strong>
+                            {% else %}
+                                <span class="text-success">₹0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if installment.payment_date %}
+                                {{ installment.payment_date }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if installment.status == 'PAID' %}
+                                <span class="badge bg-success">Paid</span>
+                            {% elif installment.status == 'PARTIAL' %}
+                                <span class="badge bg-warning">Partial</span>
+                            {% elif installment.status == 'OVERDUE' %}
+                                <span class="badge bg-danger">Overdue</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if installment.status != 'PAID' %}
+                                <a href="{% url 'installment_pay' installment.id %}" class="btn btn-sm btn-success">
+                                    <i class="bi bi-credit-card"></i> Pay
+                                </a>
+                            {% else %}
+                                <a href="{% url 'payment_history' installment.id %}" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-clock-history"></i> History
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'loan_detail' loan.id %}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Back to Loan Details
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
