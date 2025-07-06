@@ -182,6 +182,26 @@ body {
     .table-responsive {
         font-size: 0.9rem;
     }
+    
+    /* Mobile navigation improvements */
+    .navbar-nav .dropdown-menu {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .navbar-nav .dropdown-item {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    /* Mobile-friendly auth elements */
+    .nav-link {
+        padding: 0.5rem 0.75rem !important;
+    }
 }
 
 /* Custom utilities */
@@ -251,6 +271,53 @@ footer {
     margin-top: auto;
     background-color: #fff !important;
     border-top: 1px solid #e9ecef;
+}
+
+/* Authentication Styles */
+.navbar-nav .dropdown-menu {
+    min-width: 200px;
+}
+
+.navbar-nav .dropdown-header {
+    color: #495057;
+    font-weight: 600;
+}
+
+.navbar-nav .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.navbar-nav .dropdown-item.text-danger:hover {
+    background-color: #f8d7da;
+    color: #721c24 !important;
+}
+
+/* User info in navbar */
+.navbar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-nav .nav-link i {
+    font-size: 1.1rem;
+}
+
+/* Logout button styling */
+.dropdown-item.border-0.bg-transparent {
+    background: none !important;
+    border: none !important;
+    padding: 0.25rem 1rem;
+    font-size: 0.875rem;
+    color: #dc3545 !important;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.dropdown-item.border-0.bg-transparent:hover {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
 }
 
 /* Print styles */

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
@@ -9,6 +10,7 @@ from ..forms import LoanForm, LoanSearchForm
 from ..utils import calculate_loan_details
 
 
+@login_required
 def loan_list_view(request):
     """List all loans with search and filter functionality"""
     search_form = LoanSearchForm(request.GET)
@@ -47,6 +49,7 @@ def loan_list_view(request):
     return render(request, 'loans/loan_list.html', context)
 
 
+@login_required
 def loan_detail_view(request, loan_id):
     """View loan details with installment schedule"""
     loan = get_object_or_404(Loan.objects.select_related('borrower'), id=loan_id)
@@ -71,6 +74,7 @@ def loan_detail_view(request, loan_id):
     return render(request, 'loans/loan_detail.html', context)
 
 
+@login_required
 def loan_add_view(request):
     """Add new loan"""
     if request.method == 'POST':
@@ -90,6 +94,7 @@ def loan_add_view(request):
     return render(request, 'loans/loan_form.html', context)
 
 
+@login_required
 def loan_edit_view(request, loan_id):
     """Edit existing loan (only if no payments made)"""
     loan = get_object_or_404(Loan, id=loan_id)
@@ -119,6 +124,7 @@ def loan_edit_view(request, loan_id):
     return render(request, 'loans/loan_form.html', context)
 
 
+@login_required
 def loan_close_view(request, loan_id):
     """Close a loan"""
     loan = get_object_or_404(Loan, id=loan_id)
@@ -139,6 +145,7 @@ def loan_close_view(request, loan_id):
     return render(request, 'loans/loan_confirm_close.html', context)
 
 
+@login_required
 @require_http_methods(["GET"])
 def calculate_loan_ajax(request):
     """AJAX endpoint to calculate loan details"""
@@ -164,6 +171,7 @@ def calculate_loan_ajax(request):
         return JsonResponse({'error': 'Invalid input parameters'})
 
 
+@login_required
 def installment_schedule_view(request, loan_id):
     """View detailed installment schedule for a loan"""
     loan = get_object_or_404(Loan.objects.select_related('borrower'), id=loan_id)

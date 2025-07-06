@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
@@ -7,6 +8,7 @@ from ..models import Installment, Payment
 from ..forms import PaymentForm
 
 
+@login_required
 def installment_pay_view(request, installment_id):
     """Record payment for an installment"""
     installment = get_object_or_404(
@@ -45,6 +47,7 @@ def installment_pay_view(request, installment_id):
     return render(request, 'loans/payment_form.html', context)
 
 
+@login_required
 def payment_history_view(request, installment_id):
     """View payment history for an installment"""
     installment = get_object_or_404(
@@ -62,6 +65,7 @@ def payment_history_view(request, installment_id):
     return render(request, 'loans/payment_history.html', context)
 
 
+@login_required
 @require_http_methods(["POST"])
 def mark_installment_paid_ajax(request, installment_id):
     """AJAX endpoint to mark installment as fully paid"""
@@ -98,6 +102,7 @@ def mark_installment_paid_ajax(request, installment_id):
         return JsonResponse({'error': str(e)})
 
 
+@login_required
 def overdue_installments_view(request):
     """View all overdue installments"""
     overdue_installments = Installment.objects.filter(
@@ -119,6 +124,7 @@ def overdue_installments_view(request):
     return render(request, 'loans/overdue_installments.html', context)
 
 
+@login_required
 def upcoming_dues_view(request):
     """View upcoming dues for the next 30 days"""
     today = timezone.now().date()
@@ -144,6 +150,7 @@ def upcoming_dues_view(request):
     return render(request, 'loans/upcoming_dues.html', context)
 
 
+@login_required
 def all_payments_view(request):
     """View all payments with filters"""
     payments = Payment.objects.select_related(

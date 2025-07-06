@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from ..models import Loan, Installment, Borrower, Payment
 from ..utils import get_dashboard_stats, get_upcoming_dues, get_recent_payments
 
 
+@login_required
 def dashboard_view(request):
     """Dashboard view with key statistics and recent activities"""
     
@@ -37,4 +39,4 @@ def dashboard_view(request):
 
 def home_view(request):
     """Redirect to dashboard"""
-    return dashboard_view(request)
+    return redirect('dashboard')

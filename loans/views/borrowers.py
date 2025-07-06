@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from ..models import Borrower
@@ -7,6 +8,7 @@ from ..forms import BorrowerForm, BorrowerSearchForm
 from ..utils import get_borrower_loan_summary
 
 
+@login_required
 def borrower_list_view(request):
     """List all borrowers with search functionality"""
     search_form = BorrowerSearchForm(request.GET)
@@ -36,6 +38,7 @@ def borrower_list_view(request):
     return render(request, 'loans/borrower_list.html', context)
 
 
+@login_required
 def borrower_detail_view(request, borrower_id):
     """View borrower details with loan history"""
     borrower = get_object_or_404(Borrower, id=borrower_id)
@@ -54,6 +57,7 @@ def borrower_detail_view(request, borrower_id):
     return render(request, 'loans/borrower_detail.html', context)
 
 
+@login_required
 def borrower_add_view(request):
     """Add new borrower"""
     if request.method == 'POST':
@@ -73,6 +77,7 @@ def borrower_add_view(request):
     return render(request, 'loans/borrower_form.html', context)
 
 
+@login_required
 def borrower_edit_view(request, borrower_id):
     """Edit existing borrower"""
     borrower = get_object_or_404(Borrower, id=borrower_id)
@@ -95,6 +100,7 @@ def borrower_edit_view(request, borrower_id):
     return render(request, 'loans/borrower_form.html', context)
 
 
+@login_required
 def borrower_delete_view(request, borrower_id):
     """Delete borrower (only if no active loans)"""
     borrower = get_object_or_404(Borrower, id=borrower_id)

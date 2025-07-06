@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views.dashboard import dashboard_view, home_view
 from .views.borrowers import (
     borrower_list_view, borrower_detail_view, borrower_add_view, 
@@ -12,8 +12,13 @@ from .views.installments import (
     installment_pay_view, payment_history_view, mark_installment_paid_ajax,
     overdue_installments_view, upcoming_dues_view, all_payments_view
 )
+from .views.auth import CustomLoginView, logout_view
 
 urlpatterns = [
+    # Authentication
+    path('auth/login/', CustomLoginView.as_view(), name='login'),
+    path('auth/logout/', logout_view, name='logout'),
+    
     # Dashboard
     path('', home_view, name='home'),
     path('dashboard/', dashboard_view, name='dashboard'),
