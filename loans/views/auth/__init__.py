@@ -42,14 +42,18 @@ class CustomLogoutView(auth_views.LogoutView):
         return super().dispatch(request, *args, **kwargs)
 
 
-@require_POST
-@csrf_protect
 def logout_view(request):
-    """Simple logout view that handles POST requests properly"""
+    """Simple logout view that handles both GET and POST requests"""
+    # Debug: Add some logging to see if the view is being called
+    print(f"Logout view called by user: {request.user.username if request.user.is_authenticated else 'Anonymous'}")
+    
     if request.user.is_authenticated:
         user_name = request.user.get_full_name() or request.user.username
         logout(request)
         messages.success(request, f'Goodbye {user_name}! You have been successfully signed out.')
+        print(f"User {user_name} logged out successfully")
+    else:
+        print("User was not authenticated")
     
     return redirect('login')
 

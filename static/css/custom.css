@@ -303,23 +303,6 @@ footer {
     font-size: 1.1rem;
 }
 
-/* Logout button styling */
-.dropdown-item.border-0.bg-transparent {
-    background: none !important;
-    border: none !important;
-    padding: 0.25rem 1rem;
-    font-size: 0.875rem;
-    color: #dc3545 !important;
-    text-align: left;
-    width: 100%;
-    cursor: pointer;
-}
-
-.dropdown-item.border-0.bg-transparent:hover {
-    background-color: #f8d7da !important;
-    color: #721c24 !important;
-}
-
 /* Print styles */
 @media print {
     .navbar,

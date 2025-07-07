@@ -6,7 +6,7 @@ from .views.borrowers import (
 )
 from .views.loans import (
     loan_list_view, loan_detail_view, loan_add_view, loan_edit_view,
-    loan_close_view, calculate_loan_ajax, installment_schedule_view
+    loan_close_view, loan_delete_view, calculate_loan_ajax, installment_schedule_view
 )
 from .views.installments import (
     installment_pay_view, payment_history_view, mark_installment_paid_ajax,
@@ -35,6 +35,7 @@ urlpatterns = [
     path('loans/add/', loan_add_view, name='loan_add'),
     path('loans/<int:loan_id>/', loan_detail_view, name='loan_detail'),
     path('loans/<int:loan_id>/edit/', loan_edit_view, name='loan_edit'),
+    path('loans/<int:loan_id>/delete/', loan_delete_view, name='loan_delete'),
     path('loans/<int:loan_id>/close/', loan_close_view, name='loan_close'),
     path('loans/<int:loan_id>/schedule/', installment_schedule_view, name='installment_schedule'),
     

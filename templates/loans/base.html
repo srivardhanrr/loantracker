@@ -87,12 +87,9 @@
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
                                 <li>
-                                    <form method="post" action="{% url 'logout' %}" class="d-inline" id="logoutForm">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start" onclick="return confirmLogout()">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Sign Out
-                                        </button>
-                                    </form>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                                    </a>
                                 </li>
                             </ul>
                         </li>
@@ -149,21 +146,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="{% static 'js/custom.js' %}"></script>
-    
-    <script>
-    // Logout confirmation function
-    function confirmLogout() {
-        // For mobile-friendly experience, no confirmation needed
-        // Just show a brief loading state
-        const button = event.target;
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Signing out...';
-        button.disabled = true;
-        
-        // Let the form submit naturally
-        return true;
-    }
-    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

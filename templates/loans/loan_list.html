@@ -89,11 +89,19 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{% url 'loan_detail' loan.id %}" class="btn btn-outline-primary">
+                                    <a href="{% url 'loan_detail' loan.id %}" class="btn btn-outline-primary" title="View Details">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     {% if loan.status == 'ACTIVE' %}
-                                        <a href="{% url 'installment_schedule' loan.id %}" class="btn btn-outline-info">
+                                        {% if loan.get_paid_amount == 0 %}
+                                            <a href="{% url 'loan_edit' loan.id %}" class="btn btn-outline-warning" title="Edit Loan">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'loan_delete' loan.id %}" class="btn btn-outline-danger" title="Delete Loan">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'installment_schedule' loan.id %}" class="btn btn-outline-info" title="View Schedule">
                                             <i class="bi bi-calendar-check"></i>
                                         </a>
                                     {% endif %}

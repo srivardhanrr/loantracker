@@ -1,0 +1,109 @@
+{% extends 'loans/base.html' %}
+
+{% block title %}Delete Loan - Gopal Enterprises{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Confirm Loan Deletion
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Warning!</strong> This action cannot be undone.
+                </div>
+                
+                <p class="mb-3">Are you sure you want to delete this loan?</p>
+                
+                <!-- Loan Details -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">Loan Details</h6>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Borrower:</strong><br>
+                                {{ loan.borrower.name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Phone:</strong><br>
+                                {{ loan.borrower.phone }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Loan Amount:</strong><br>
+                                <span class="text-primary">₹{{ loan.amount|floatformat:0 }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Total Amount:</strong><br>
+                                <span class="text-warning">₹{{ loan.total_amount|floatformat:0 }}</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Interest Rate:</strong><br>
+                                {{ loan.interest_rate }}% per annum
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Tenure:</strong><br>
+                                {{ loan.tenure_months }} months
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Start Date:</strong><br>
+                                {{ loan.start_date }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Monthly EMI:</strong><br>
+                                ₹{{ loan.monthly_installment|floatformat:0 }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Consequences -->
+                <div class="alert alert-info">
+                    <h6><i class="bi bi-info-circle me-2"></i>What will happen:</h6>
+                    <ul class="mb-0">
+                        <li>The loan record will be permanently deleted</li>
+                        <li>All {{ loan.installments.count }} installment records will be deleted</li>
+                        <li>This action cannot be reversed</li>
+                        <li>The borrower record will remain unchanged</li>
+                    </ul>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'loan_detail' loan.id %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Cancel
+                    </a>
+                    
+                    <form method="post" class="d-inline" onsubmit="return confirmDeletion()">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-2"></i>
+                            Yes, Delete Loan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDeletion() {
+    return confirm('Are you absolutely sure you want to delete this loan? This action cannot be undone!');
+}
+</script>
+{% endblock %}

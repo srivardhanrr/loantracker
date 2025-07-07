@@ -146,6 +146,34 @@ def loan_close_view(request, loan_id):
 
 
 @login_required
+def loan_delete_view(request, loan_id):
+    """Delete a loan (only if no payments made)"""
+    loan = get_object_or_404(Loan, id=loan_id)
+    
+    # Check if any payments have been made
+    if loan.get_paid_amount() > 0:
+        messages.error(request, 'Cannot delete loan after payments have been made!')
+        return redirect('loan_detail', loan_id=loan.id)
+    
+    if request.method == 'POST':
+        borrower_name = loan.borrower.name
+        loan_amount = loan.amount
+        
+        # Delete the loan (this will also delete related installments due to CASCADE)
+        loan.delete()
+        
+        messages.success(request, f'Loan of ₹{loan_amount} for "{borrower_name}" deleted successfully!')
+        return redirect('loan_list')
+    
+    context = {
+        'loan': loan,
+        'title': f'Delete Loan: {loan.borrower.name}'
+    }
+    
+    return render(request, 'loans/loan_confirm_delete.html', context)
+
+
+@login_required
 @require_http_methods(["GET"])
 def calculate_loan_ajax(request):
     """AJAX endpoint to calculate loan details"""

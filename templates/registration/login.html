@@ -12,143 +12,230 @@
     
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
             display: flex;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: none;
+            overflow: hidden;
         }
         
         .login-header {
-            background: linear-gradient(135deg, #0d6efd, #0056b3);
-            border-radius: 20px 20px 0 0;
+            background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
             color: white;
-            padding: 2rem;
+            padding: 2.5rem 2rem 2rem;
             text-align: center;
+            border-radius: 16px 16px 0 0;
         }
         
-        .login-header i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
-        
-        .login-body {
-            padding: 2rem;
-        }
-        
-        .form-control {
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            padding: 0.875rem 1.125rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-            transform: translateY(-2px);
-        }
-        
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .input-group-text {
-            border-radius: 12px 0 0 12px;
-            border: 2px solid #e9ecef;
-            border-right: none;
-            background: #f8f9fa;
-            color: #6c757d;
-        }
-        
-        .input-group .form-control {
-            border-radius: 0 12px 12px 0;
-            border-left: none;
-        }
-        
-        .btn-login {
-            background: linear-gradient(135deg, #0d6efd, #0056b3);
-            border: none;
-            border-radius: 12px;
-            padding: 0.875rem;
-            font-weight: 600;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
-        }
-        
-        .alert {
-            border-radius: 12px;
-            border: none;
-            margin-bottom: 1.5rem;
+        .company-logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.95;
         }
         
         .company-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
         }
         
         .company-tagline {
-            opacity: 0.9;
             font-size: 0.9rem;
+            opacity: 0.85;
+            margin: 0.25rem 0 0;
+        }
+        
+        .login-body {
+            padding: 2.5rem 2rem;
+        }
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-floating > .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            height: auto;
+            transition: all 0.2s ease;
+            background: #fafbfc;
+        }
+        
+        .form-floating > .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+            background: white;
+        }
+        
+        .form-floating > label {
+            color: #6c757d;
+            font-weight: 500;
+            padding: 1rem 0.75rem;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0.25rem;
+            z-index: 5;
+        }
+        
+        .password-toggle:hover {
+            color: #495057;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.2s ease;
+            color: white;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.25);
+            background: linear-gradient(135deg, #0b5ed7 0%, #004085 100%);
+            color: white;
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .remember-me {
+            margin: 1.5rem 0;
+        }
+        
+        .form-check-input {
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .form-check-label {
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.25rem;
+        }
+        
+        .alert-danger {
+            background: #fff5f5;
+            color: #dc3545;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .alert-success {
+            background: #f0fff4;
+            color: #198754;
+            border-left: 4px solid #198754;
+        }
+        
+        .alert-info {
+            background: #f0f9ff;
+            color: #0dcaf0;
+            border-left: 4px solid #0dcaf0;
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f1f3f4;
+            margin-top: 1rem;
+        }
+        
+        .help-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        .brand-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6c757d;
+            font-size: 0.875rem;
         }
         
         /* Mobile optimizations */
         @media (max-width: 576px) {
-            .login-container {
+            .login-card {
                 margin: 1rem;
-                border-radius: 15px;
+                border-radius: 12px;
             }
             
             .login-header {
-                padding: 1.5rem;
-                border-radius: 15px 15px 0 0;
+                padding: 2rem 1.5rem 1.5rem;
+                border-radius: 12px 12px 0 0;
             }
             
-            .login-header i {
-                font-size: 2.5rem;
+            .company-logo {
+                font-size: 2rem;
             }
             
             .company-name {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
             
             .login-body {
-                padding: 1.5rem;
+                padding: 2rem 1.5rem;
+            }
+            
+            .form-floating > .form-control {
+                font-size: 16px; /* Prevents zoom on iOS */
             }
         }
         
-        /* Loading animation */
-        .btn-login:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
+        /* Loading state */
+        .btn-login.loading {
+            pointer-events: none;
+            opacity: 0.7;
         }
         
-        .loading {
-            display: none;
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
         }
         
-        .btn-login:disabled .loading {
-            display: inline-block;
-            margin-right: 0.5rem;
+        /* Focus improvements */
+        .form-control:focus,
+        .form-check-input:focus,
+        .btn:focus {
+            outline: none;
+        }
+        
+        /* Smooth animations */
+        * {
+            transition: all 0.2s ease;
         }
     </style>
 </head>
@@ -156,110 +243,125 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5 col-xl-4">
-                <div class="login-container">
+                <div class="card login-card">
                     <!-- Header -->
                     <div class="login-header">
-                        <i class="bi bi-bank"></i>
-                        <div class="company-name">Gopal Enterprises</div>
-                        <div class="company-tagline">Loan Management System</div>
+                        <div class="company-logo">
+                            <i class="bi bi-bank2"></i>
+                        </div>
+                        <h1 class="company-name">Gopal Enterprises</h1>
+                        <p class="company-tagline">Loan Management System</p>
                     </div>
                     
                     <!-- Body -->
                     <div class="login-body">
+                        <!-- Error Messages -->
                         {% if form.errors %}
                             <div class="alert alert-danger">
-                                <i class="bi bi-exclamation-triangle me-2"></i>
-                                <strong>Login Failed!</strong><br>
-                                {% for field, errors in form.errors.items %}
-                                    {% for error in errors %}
-                                        {{ error }}<br>
-                                    {% endfor %}
-                                {% endfor %}
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div>
+                                        <strong>Login failed!</strong><br>
+                                        Please check your username and password.
+                                    </div>
+                                </div>
                             </div>
                         {% endif %}
                         
+                        <!-- Success Messages -->
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert alert-{{ message.tags }}">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    {{ message }}
+                                    <div class="d-flex align-items-center">
+                                        {% if message.tags == 'success' %}
+                                            <i class="bi bi-check-circle-fill me-2"></i>
+                                        {% elif message.tags == 'error' %}
+                                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        {% else %}
+                                            <i class="bi bi-info-circle-fill me-2"></i>
+                                        {% endif %}
+                                        <div>{{ message }}</div>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% endif %}
                         
+                        <!-- Login Form -->
                         <form method="post" id="loginForm">
                             {% csrf_token %}
                             
                             <!-- Username Field -->
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-person"></i>
-                                </span>
+                            <div class="form-floating">
                                 <input type="text" 
                                        class="form-control" 
+                                       id="username"
                                        name="username" 
                                        placeholder="Username"
                                        required
                                        autocomplete="username"
                                        {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
+                                <label for="username">
+                                    <i class="bi bi-person me-2"></i>Username
+                                </label>
                             </div>
                             
                             <!-- Password Field -->
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-lock"></i>
-                                </span>
+                            <div class="form-floating position-relative">
                                 <input type="password" 
                                        class="form-control" 
+                                       id="password"
                                        name="password" 
                                        placeholder="Password"
                                        required
                                        autocomplete="current-password">
-                                <button class="btn btn-outline-secondary" 
-                                        type="button" 
-                                        id="togglePassword"
-                                        style="border-radius: 0 12px 12px 0;">
+                                <label for="password">
+                                    <i class="bi bi-lock me-2"></i>Password
+                                </label>
+                                <button type="button" class="password-toggle" id="togglePassword">
                                     <i class="bi bi-eye" id="eyeIcon"></i>
                                 </button>
                             </div>
                             
                             <!-- Remember Me -->
-                            <div class="form-check mb-3">
+                            <div class="form-check remember-me">
                                 <input class="form-check-input" 
                                        type="checkbox" 
                                        id="rememberMe"
                                        name="remember_me">
                                 <label class="form-check-label" for="rememberMe">
-                                    Remember me
+                                    Keep me signed in
                                 </label>
                             </div>
                             
                             <!-- Login Button -->
-                            <button type="submit" class="btn btn-primary btn-login" id="loginBtn">
-                                <span class="loading">
-                                    <i class="bi bi-arrow-clockwise"></i>
+                            <button type="submit" class="btn btn-login" id="loginBtn">
+                                <span id="loginText">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    Sign In
                                 </span>
-                                <i class="bi bi-box-arrow-in-right me-2"></i>
-                                Sign In
+                                <span id="loginLoading" class="d-none">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    Signing in...
+                                </span>
                             </button>
                         </form>
                         
-                        <!-- Additional Info -->
-                        <div class="text-center mt-4 pt-3 border-top">
-                            <small class="text-muted">
-                                <i class="bi bi-shield-lock me-1"></i>
-                                Secure Login Required
-                            </small>
+                        <!-- Footer -->
+                        <div class="login-footer">
+                            <p class="help-text">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Secure authentication required
+                            </p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Footer Info -->
-                <div class="text-center mt-4">
-                    <small class="text-white-50">
+                <!-- Brand Footer -->
+                <div class="brand-footer">
+                    <p class="mb-0">
                         <i class="bi bi-info-circle me-1"></i>
                         Need access? Contact your system administrator.
-                    </small>
+                    </p>
                 </div>
             </div>
         </div>
@@ -269,9 +371,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Toggle password visibility
+        // Password visibility toggle
         document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordField = document.querySelector('input[name="password"]');
+            const passwordField = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
             
             if (passwordField.type === 'password') {
@@ -283,39 +385,34 @@
             }
         });
         
-        // Form submission handling
+        // Form submission with loading state
         document.getElementById('loginForm').addEventListener('submit', function() {
             const loginBtn = document.getElementById('loginBtn');
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = `
-                <span class="loading">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </span>
-                Signing In...
-            `;
+            const loginText = document.getElementById('loginText');
+            const loginLoading = document.getElementById('loginLoading');
+            
+            loginBtn.classList.add('loading');
+            loginText.classList.add('d-none');
+            loginLoading.classList.remove('d-none');
         });
         
         // Auto focus on username field
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('input[name="username"]').focus();
+            document.getElementById('username').focus();
         });
         
-        // Handle form validation feedback
-        const inputs = document.querySelectorAll('.form-control');
-        inputs.forEach(input => {
-            input.addEventListener('blur', function() {
-                if (this.value.trim() === '') {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                }
-            });
+        // Remove loading state if there are errors
+        {% if form.errors %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('loginBtn');
+            const loginText = document.getElementById('loginText');
+            const loginLoading = document.getElementById('loginLoading');
             
-            input.addEventListener('input', function() {
-                this.classList.remove('is-invalid', 'is-valid');
-            });
+            loginBtn.classList.remove('loading');
+            loginText.classList.remove('d-none');
+            loginLoading.classList.add('d-none');
         });
+        {% endif %}
     </script>
 </body>
 </html>
